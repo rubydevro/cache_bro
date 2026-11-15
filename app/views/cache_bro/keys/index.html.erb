@@ -1,0 +1,36 @@
+<% bro_hub_crumb "Keys" %>
+<%= render "cache_bro/shared/store_tabs", path: ->(name) { root_path(store: name) } %>
+
+<%= bro_hub_hero eyebrow: [ cache_bro_store.name, (cache_bro_store.namespace ? "namespace #{cache_bro_store.namespace}" : "no namespace") ].join(" · "),
+      title: @listing.entries.size,
+      subtitle: @listing.more? ? "keys so far" : (@listing.entries.size == 1 ? "key" : "keys"),
+      lead: "Search what is in the cache. Plain text matches anywhere in the key; use * and ? for a pattern. " \
+            "Redis is walked in small steps, so on a big cache a page may show only part of the matches: keep looking to continue." %>
+
+<% unless cache_bro_store.namespaced? %>
+  <div class="bh-alert bh-alert-error">This cache store has no namespace, so it shares its Redis database with whatever else lives there. Set <code>namespace:</code> on the cache store to keep CacheBro to the cache's own keys.</div>
+<% end %>
+
+<%= form_with url: root_path, method: :get, class: "bh-filters" do %>
+  <%= hidden_field_tag :store, cache_bro_store.name %>
+  <%= text_field_tag :q, @query, placeholder: "Search keys, e.g. posts/ or views/*/show*", class: "bh-input is-strong", "aria-label": "Search keys", autofocus: true %>
+  <%= submit_tag "Search", name: nil, class: "bh-chip" %>
+  <%= link_to "Reset", root_path(store: cache_bro_store.name), class: "bh-link-quiet" %>
+<% end %>
+
+<div class="bh-table-wrap">
+  <div class="bh-table" style="--cols: minmax(260px,1fr) 150px 100px; --min: 560px">
+    <div class="bh-row is-head"><span>Key</span><span>Expires</span><span>Size</span></div>
+    <% @listing.entries.each do |entry| %>
+      <%= link_to key_path(store: cache_bro_store.name, key: entry.key), class: "bh-row" do %>
+        <span class="bh-cell-strong" style="overflow-wrap:anywhere"><%= entry.key %></span>
+        <span class="bh-cell-muted"><%= cache_bro_ttl(entry.ttl) %></span>
+        <span class="bh-cell-muted"><%= cache_bro_size(entry.size) %></span>
+      <% end %>
+    <% end %>
+    <% if @listing.entries.empty? %>
+      <div class="bh-empty"><%= @listing.more? ? "Nothing here yet." : "No keys." %></div>
+    <% end %>
+    <%= cache_bro_pager(@listing, query: @query) %>
+  </div>
+</div>

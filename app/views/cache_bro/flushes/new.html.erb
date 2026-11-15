@@ -1,0 +1,19 @@
+<% bro_hub_crumb "Flush" %>
+<%= render "cache_bro/shared/store_tabs", path: ->(name) { flush_path(store: name) } %>
+
+<%= bro_hub_hero eyebrow: cache_bro_store.name, title: "Flush", tone: :red,
+      lead: "Delete everything in this cache store's namespace. Every cached page, fragment and value is rebuilt on demand, which can load your database. Recorded in the audit log." %>
+
+<% if cache_bro_store.namespaced? %>
+  <%= form_with url: flush_path, method: :post, class: "bh-filters" do %>
+    <%= hidden_field_tag :store, cache_bro_store.name %>
+    <label class="bh-field">Type <strong><%= cache_bro_store.name %></strong> to confirm
+      <%= text_field_tag :confirm, nil, class: "bh-input", autocomplete: "off", required: true %>
+    </label>
+    <%= cache_bro_reason_field(:flush) %>
+    <%= submit_tag "Flush #{cache_bro_store.name}", name: nil, class: "bh-btn is-auto", style: "background:var(--bh-red)" %>
+  <% end %>
+  <p class="bh-hint" style="padding:0 var(--bh-pad)">Only keys under the namespace <code><%= cache_bro_store.namespace %></code> are deleted.</p>
+<% else %>
+  <div class="bh-alert bh-alert-error">This store has no namespace, so flushing it would delete keys that aren't the cache's. Set <code>namespace:</code> on the cache store to enable this. You can still purge by pattern.</div>
+<% end %>

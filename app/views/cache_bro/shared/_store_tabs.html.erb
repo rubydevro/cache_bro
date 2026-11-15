@@ -1,0 +1,9 @@
+<%# Tabs on the right of the breadcrumb bar when there is more than one cache store. `path` builds the link for a store name. %>
+<% if CacheBro.config.store_names.size > 1 %>
+  <% current = params[:store].presence || CacheBro.config.store_names.first %>
+  <% content_for :bro_hub_crumb_actions do %>
+    <% CacheBro.config.store_names.each do |name| %>
+      <%= bro_hub_crumb_link name, path.call(name), active: name == current %>
+    <% end %>
+  <% end %>
+<% end %>

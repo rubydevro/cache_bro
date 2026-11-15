@@ -1,0 +1,48 @@
+<% bro_hub_crumb "Audit log", "##{@event.id}" %>
+<% content_for :bro_hub_crumb_actions do %>
+  <%= bro_hub_crumb_link "← Audit log", audit_path %>
+<% end %>
+
+<%= bro_hub_hero eyebrow: "#{@event.store} · #{@event.environment}", title: cache_bro_event_label(@event.event),
+      subtitle: ("#{cache_bro_count(@event.count, "key")}" if @event.count),
+      lead: safe_join([ content_tag(:strong, @event.user_label), " at #{@event.created_at.utc.strftime("%Y-%m-%d %H:%M UTC")}" ]) %>
+
+<div class="bh-split">
+  <section class="bh-split-main">
+    <div class="bh-block-head"><h2 class="bh-h2"><%= @event.event == "keys_purged" ? "Pattern" : "Key" %></h2></div>
+    <% if @event.target.present? %>
+      <pre class="bh-cmd-code" style="white-space:pre-wrap;overflow-wrap:anywhere"><%= @event.target %></pre>
+    <% else %>
+      <p class="bh-hint">The whole namespace.</p>
+    <% end %>
+
+    <% if @event.sample.any? %>
+      <div class="bh-block-head" style="margin-top:24px">
+        <h2 class="bh-h2">Keys deleted</h2>
+        <span class="bh-meta">a sample of <%= @event.sample.size %><%= " (more were deleted)" if @event.count.to_i > @event.sample.size %></span>
+      </div>
+      <div class="bh-log">
+        <% @event.sample.each do |key| %>
+          <div class="bh-cmd"><pre class="bh-cmd-code" style="white-space:pre-wrap;overflow-wrap:anywhere"><%= key %></pre></div>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <div class="bh-split-aside">
+    <section class="bh-block">
+      <h2 class="bh-h2">Details</h2>
+      <dl class="bh-dl">
+        <dt>User</dt><dd><%= @event.user_label %></dd>
+        <dt>Action</dt><dd><%= cache_bro_event_tag(@event.event) %></dd>
+        <dt>When</dt><dd><%= cache_bro_time(@event.created_at) %></dd>
+        <dt>Store</dt><dd><%= @event.store %></dd>
+        <dt>Environment</dt><dd><%= @event.environment %></dd>
+        <dt>Keys</dt><dd><%= @event.count || "-" %></dd>
+        <dt>Reason</dt><dd><%= @event.reason.presence || "none given" %></dd>
+        <% if @event.details["completed"] == false %><dt>Outcome</dt><dd class="bh-tone-red">failed part way: only the keys counted here were deleted</dd><% end %>
+        <% if @event.truncated? %><dt>Limit</dt><dd class="bh-tone-amber">stopped at the per-purge limit</dd><% end %>
+      </dl>
+    </section>
+  </div>
+</div>

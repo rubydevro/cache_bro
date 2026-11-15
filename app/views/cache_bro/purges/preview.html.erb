@@ -1,0 +1,37 @@
+<% bro_hub_crumb "Purge", "Confirm" %>
+<% content_for :bro_hub_crumb_actions do %>
+  <%= bro_hub_crumb_link "← Change pattern", purge_path(store: cache_bro_store.name) %>
+<% end %>
+
+<%= bro_hub_hero eyebrow: "#{cache_bro_store.name} · #{@pattern}",
+      title: "#{number_with_delimiter(@matches.count)}#{"+" if @matches.truncated}",
+      subtitle: @matches.count == 1 ? "key matches" : "keys match", tone: (@matches.count.zero? ? nil : :red),
+      lead: @matches.count.zero? ? "Nothing matches. Nothing to delete." : "Nothing has been deleted yet." %>
+
+<% if @matches.count.positive? %>
+  <div class="bh-split">
+    <section class="bh-split-main">
+      <div class="bh-block-head"><h2 class="bh-h2">For example</h2></div>
+      <div class="bh-log">
+        <% @matches.sample.each do |key| %>
+          <div class="bh-cmd"><pre class="bh-cmd-code" style="white-space:pre-wrap;overflow-wrap:anywhere"><%= key %></pre></div>
+        <% end %>
+      </div>
+      <% if @matches.truncated %>
+        <p class="bh-hint is-error">More than <%= number_with_delimiter(CacheBro.config.max_purge_keys) %> keys match. One purge deletes at most that many, so run it again for the rest.</p>
+      <% end %>
+    </section>
+    <div class="bh-split-aside">
+      <section class="bh-block">
+        <h2 class="bh-h2">Delete them</h2>
+        <p class="bh-hint">The count can change by the time you confirm. What is deleted is recorded, with this pattern<%= " and your reason" if @reason %>.</p>
+        <%= form_with url: purge_path, method: :post do %>
+          <%= hidden_field_tag :store, cache_bro_store.name %>
+          <%= hidden_field_tag :pattern, @pattern %>
+          <%= hidden_field_tag :reason, @reason %>
+          <%= submit_tag "Purge #{cache_bro_count(@matches.count, "key")}#{"+" if @matches.truncated}", name: nil, class: "bh-btn is-auto", style: "margin-top:14px;background:var(--bh-red)" %>
+        <% end %>
+      </section>
+    </div>
+  </div>
+<% end %>

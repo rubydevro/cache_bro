@@ -1,0 +1,3 @@
+<% bro_hub_crumb "Unsupported store" %>
+<%= render "cache_bro/shared/store_tabs", path: ->(name) { root_path(store: name) } %>
+<%= bro_hub_hero eyebrow: "Cache", title: "Can't manage this store", tone: :amber, lead: @unsupported %>

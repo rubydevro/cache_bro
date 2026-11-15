@@ -1,0 +1,39 @@
+<% bro_hub_crumb "Audit log" %>
+<% content_for :bro_hub_crumb_actions do %>
+  <% [ [ "All", nil ], *CacheBro::AuditEvent::EVENTS.map { |event| [ cache_bro_event_label(event), event ] } ].each do |label, event| %>
+    <%= bro_hub_crumb_link label, audit_path(@filter.merge(event: event).compact), active: @filter[:event] == event %>
+  <% end %>
+<% end %>
+
+<%= bro_hub_hero eyebrow: "Audit log", title: @total, subtitle: @total == 1 ? "event" : "events",
+      lead: "Who revealed, deleted or purged what. Entries can't be changed. Keys and patterns are recorded, never values.",
+      stats: [ [ @counts.fetch("value_viewed", 0), "reveals", :amber ], [ %w[ key_deleted keys_purged store_flushed ].sum { |event| @counts.fetch(event, 0) }, "deletions", :red ] ] %>
+
+<%= form_with url: audit_path, method: :get, class: "bh-filters" do %>
+  <%= hidden_field_tag :event, @filter[:event] if @filter[:event] %>
+  <%= text_field_tag :q, @filter[:q], placeholder: "Search keys and patterns", class: "bh-input is-strong", "aria-label": "Search keys and patterns" %>
+  <%= text_field_tag :user, @filter[:user], placeholder: "User", class: "bh-input", "aria-label": "User" %>
+  <% if CacheBro.config.store_names.size > 1 %>
+    <%= select_tag :store, options_for_select([ [ "Any store", "" ], *CacheBro.config.store_names ], @filter[:store]), class: "bh-select", "aria-label": "Store" %>
+  <% end %>
+  <%= submit_tag "Filter", name: nil, class: "bh-chip" %>
+  <%= link_to "Reset", audit_path(event: @filter[:event]), class: "bh-link-quiet" %>
+<% end %>
+
+<div class="bh-table-wrap">
+  <div class="bh-table" style="--cols: 150px 150px 100px 120px minmax(220px,1fr) 80px; --min: 900px">
+    <div class="bh-row is-head"><span>When</span><span>User</span><span>Action</span><span>Store</span><span>Key or pattern</span><span>Keys</span></div>
+    <% @events.each do |event| %>
+      <%= link_to audit_event_path(event), class: [ "bh-row", ("bh-edge-red" unless event.event == "value_viewed") ] do %>
+        <span class="bh-tone-violet"><%= cache_bro_time(event.created_at) %></span>
+        <span class="bh-cell-strong"><%= event.user_label %></span>
+        <span><%= cache_bro_event_tag(event.event) %></span>
+        <span class="bh-cell-muted"><%= event.store %></span>
+        <span class="bh-cell-text" style="overflow-wrap:anywhere"><%= truncate(event.target.to_s, length: 90) %></span>
+        <span><%= event.count %></span>
+      <% end %>
+    <% end %>
+    <% if @events.empty? %><div class="bh-empty">Nothing recorded.</div><% end %>
+    <%= cache_bro_audit_pager(total: @total, page: @page) %>
+  </div>
+</div>

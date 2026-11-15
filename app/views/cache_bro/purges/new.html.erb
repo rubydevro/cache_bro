@@ -1,0 +1,17 @@
+<% bro_hub_crumb "Purge" %>
+<%= render "cache_bro/shared/store_tabs", path: ->(name) { purge_path(store: name) } %>
+
+<%= bro_hub_hero eyebrow: cache_bro_store.name, title: "Purge", tone: :red,
+      lead: "Delete every key that matches a pattern. You see how many match before anything is deleted, and the purge is recorded." %>
+
+<% unless cache_bro_store.namespaced? %>
+  <div class="bh-alert bh-alert-error">This cache store has no namespace: a pattern can match keys that aren't the cache's. Check the preview carefully.</div>
+<% end %>
+
+<%= form_with url: purge_preview_path, method: :post, class: "bh-filters" do %>
+  <%= hidden_field_tag :store, cache_bro_store.name %>
+  <%= text_field_tag :pattern, nil, placeholder: "Pattern, e.g. posts/* or views/posts/*", class: "bh-input is-strong", "aria-label": "Pattern", required: true, autofocus: true, autocomplete: "off" %>
+  <%= cache_bro_reason_field(:purge) %>
+  <%= submit_tag "Preview", name: nil, class: "bh-chip" %>
+<% end %>
+<p class="bh-hint" style="padding:0 var(--bh-pad)">The pattern is used as typed: <code>posts/*</code> means keys starting with <code>posts/</code>. <code>*</code> is any run of characters, <code>?</code> is one.</p>
