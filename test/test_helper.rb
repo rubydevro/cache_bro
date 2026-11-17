@@ -4,9 +4,9 @@ ENV["RAILS_ENV"] = "test"
 require_relative "../test/dummy/config/environment"
 require "rails/test_help"
 
-# Load the dummy schema into the test database on every run (cheap with SQLite).
-ActiveRecord::Schema.verbose = false
-load File.expand_path("dummy/db/schema.rb", __dir__)
+# BroHub's audit table, created fresh on every run (cheap with SQLite).
+require "bro_hub/testing"
+BroHub::Testing.load_schema
 
 class ActiveSupport::TestCase
   # A key in the same Redis database, outside the cache's namespace: nothing CacheBro does may touch it.

@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gemspec path: ".."
 
 
+# TEMPORARY while bro_hub 0.2.0 is unpublished. Remove before committing.
 gem "rails", "~> 7.1.0"
 gem "redis", "~> 5.0"
 # Rails 7.1's Redis cache store predates connection_pool 3.

@@ -1,25 +1,15 @@
 module CacheBro
   # Who revealed, deleted or purged what, and when. Holds keys and patterns, never values.
-  class AuditEvent < ApplicationRecord
+  # The rows live in BroHub's one audit table; this is CacheBro's slice of it.
+  class AuditEvent < BroHub::AuditEvent
+    SOURCE = "cache_bro".freeze
     EVENTS = %w[ value_viewed key_deleted keys_purged store_flushed ].freeze
 
+    default_scope { where(source: SOURCE) }
+
     validates :event, inclusion: { in: EVENTS }
-    validates :environment, :store, presence: true
 
-    scope :recent, -> { order(created_at: :desc, id: :desc) }
-
-    # Audit entries are append-only.
-    def readonly?
-      persisted?
-    end
-
-    # Keys the action touched, for a purge or flush (a sample, see config.audit_sample_size).
-    def sample
-      Array(details["sample"])
-    end
-
-    def truncated?
-      details["truncated"] == true
-    end
+    # The cache store the action was on ("Rails.cache").
+    alias_attribute :store, :context
   end
 end

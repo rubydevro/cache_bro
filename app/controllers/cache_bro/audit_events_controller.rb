@@ -22,7 +22,7 @@ module CacheBro
         scope = AuditEvent.all
         scope = scope.where(event: filter_params[:event]) if AuditEvent::EVENTS.include?(filter_params[:event])
         scope = scope.where(user_label: filter_params[:user]) if filter_params[:user].present?
-        scope = scope.where(store: filter_params[:store]) if filter_params[:store].present?
+        scope = scope.where(context: filter_params[:store]) if filter_params[:store].present?
         scope = scope.where("target LIKE ?", "%#{AuditEvent.sanitize_sql_like(filter_params[:q])}%") if filter_params[:q].present?
         scope
       end

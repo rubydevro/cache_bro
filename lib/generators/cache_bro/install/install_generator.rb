@@ -10,14 +10,10 @@ module CacheBro
 
       source_root File.expand_path("templates", __dir__)
 
-      desc "Sets up the BroHub dashboard (CacheBro lives in it), adds the CacheBro initializer and copies the migration."
+      desc "Sets up the BroHub dashboard (CacheBro lives in it), adds the CacheBro initializer. The audit table comes with BroHub."
 
       def copy_initializer
         copy_config_once "cache_bro.rb", "config/initializers/cache_bro.rb"
-      end
-
-      def copy_migrations
-        rails_command "cache_bro:install:migrations", inline: true
       end
 
       def next_steps

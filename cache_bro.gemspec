@@ -25,6 +25,6 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.2"
   spec.add_dependency "rails", ">= 7.1"
   # The shared dashboard shell (layout, sidebar, mount point).
-  spec.add_dependency "bro_hub", ">= 0.1.2"
+  spec.add_dependency "bro_hub", ">= 0.2.0"
   # The host app brings the redis gem (it is what Rails' :redis_cache_store needs anyway).
 end

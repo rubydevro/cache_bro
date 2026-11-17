@@ -3,6 +3,8 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in cache_bro.gemspec.
 gemspec
 
+# TEMPORARY while bro_hub 0.2.0 is unpublished. Remove before committing.
+
 # What Rails' :redis_cache_store needs (the host app brings its own).
 gem "redis"
 

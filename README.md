@@ -28,7 +28,7 @@ bin/rails generate cache_bro:install
 bin/rails db:migrate
 ```
 
-The installer sets up BroHub if it isn't yet, adds `config/initializers/cache_bro.rb` and copies the migration.
+The installer sets up BroHub if it isn't yet, adds `config/initializers/cache_bro.rb`. The audit table is BroHub's shared one, its migration is copied by the same installer.
 CacheBro then lives at `<hub>/cache_bro`.
 
 Give your cache store a **namespace**:
@@ -59,11 +59,18 @@ Higher includes lower: `flush` includes `purge` and `delete`, `purge` includes `
 `view_keys`. `view_values` and `audit` stand alone on purpose: values can hold personal data, and the people who
 clean the cache shouldn't automatically read it.
 
+## Upgrading from 0.1.x
+
+CacheBro 0.2 needs **bro_hub 0.2** and writes to BroHub's shared audit table instead of `cache_bro_audit_events`. Nothing is
+copied over: `bundle update cache_bro`, `bin/rails g bro_hub:install`, `bin/rails db:migrate`, then drop the old table
+(`drop_table :cache_bro_audit_events` in a migration). CacheBro no longer ships migrations of its own.
+
 ## Audit
 
-Every reveal, delete, purge and flush is recorded in `cache_bro_audit_events`: who, what (the key or the pattern,
-never the value), how many keys, which store and environment, when, and the reason if one was given. Entries can't be
-changed or deleted through the model.
+Every reveal, delete, purge and flush is recorded in BroHub's shared audit table (`bro_hub_audit_events`, with
+`CacheBro::AuditEvent` as CacheBro's slice of it): who, what (the key or the pattern, never the value), how many keys,
+which store and environment, when, and the reason if one was given. Entries can't be changed or deleted through the
+model. They also show up in BroHub's combined audit log for people with `can_audit`.
 
 - Purges and flushes also keep a sample of the keys deleted.
 - A reveal is recorded **before** the value is shown. If the audit log can't be written, nothing is revealed.

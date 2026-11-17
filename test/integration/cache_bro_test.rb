@@ -419,6 +419,22 @@ class CacheBroIntegrationTest < ActionDispatch::IntegrationTest
 
   # --- Audit log -----------------------------------------------------------------------
 
+  test "CacheBro's events are in BroHub's shared audit log, for people who may audit" do
+    CacheBro::Audit.record(:keys_purged, user: "lead@example.com", store: "Rails.cache", target: "views/*", count: 40, reason: "bad deploy")
+    entry = BroHub::AuditEvent.sole
+    assert_equal [ "cache_bro", "Rails.cache" ], [ entry.source, entry.context ]
+
+    sign_in_as "auditor"
+    get "/bro_hub/audit"
+    assert_response :success
+    assert_select "a.bh-row", /views\/\*/
+    assert_select "a.bh-nav[href='/bro_hub/audit']"
+
+    sign_in_as "viewer"
+    get "/bro_hub/audit"
+    assert_response :forbidden
+  end
+
   test "the audit log lists everything, newest first, and filters" do
     CacheBro::Audit.record(:value_viewed, user: "dev@example.com", store: "Rails.cache", target: "posts/1")
     CacheBro::Audit.record(:keys_purged, user: "lead@example.com", store: "Rails.cache", target: "views/*", count: 40, reason: "bad deploy",

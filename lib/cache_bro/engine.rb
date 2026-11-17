@@ -11,8 +11,9 @@ module CacheBro
     # engine under <hub>/cache_bro. Showing a section is navigation only: every controller authorizes each request.
     initializer "cache_bro.bro_hub" do
       BroHub.register :cache_bro,
-        name: "CacheBro", label: "CacheBro · cache", accent: :blue, order: 30,
+        name: "CacheBro", label: "CacheBro · cache", accent: :blue, order: 40,
         engine: "CacheBro::Engine",
+        audit_visible_to: ->(user) { CacheBro.config.allows?(user, :audit) },
         visible_to: ->(user) { CacheBro.config.allows?(user, :view_keys) || CacheBro.config.allows?(user, :audit) },
         items: [
           { label: "Keys", path: "/", match: %r{\A/(key(/|\z)|\z)}, visible_to: ->(user) { CacheBro.config.allows?(user, :view_keys) } },

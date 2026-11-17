@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    cache_bro (0.1.0)
-      bro_hub (>= 0.1.2)
+    cache_bro (0.2.0)
+      bro_hub (>= 0.2.0)
       rails (>= 7.1)
 
 GEM
@@ -85,7 +85,7 @@ GEM
     ast (2.4.3)
     base64 (0.3.0)
     bigdecimal (4.1.3)
-    bro_hub (0.1.2)
+    bro_hub (0.2.0)
       rails (>= 7.1)
     builder (3.3.0)
     concurrent-ruby (1.3.8)
@@ -310,10 +310,10 @@ CHECKSUMS
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   bigdecimal (4.1.3) sha256=61ebe1e5e559bdc3cc6f2c0ee7f427321fc838f59611c294356eb04d6e21cf66
-  bro_hub (0.1.2) sha256=83c528ddb6cb376144fcf852cd0c74300dc5e99eba13609e684420fae5c2aeca
+  bro_hub (0.2.0) sha256=46ab7a0b138fd085c6b8e447b5fa06ed2d0952dc738ce9c69ab1642844dc6043
   builder (3.3.0) sha256=497918d2f9dca528fdca4b88d84e4ef4387256d984b8154e9d5d3fe5a9c8835f
   bundler (4.0.22) sha256=d8d5ec84c8555e0af71db63ed7aee4d1a8fb839ec46d84212d61979242a5d75a
-  cache_bro (0.1.0)
+  cache_bro (0.2.0)
   concurrent-ruby (1.3.8) sha256=b2f1be836e968ccc78ccfce277ea79c72a88633f22306782c16ff23fb415d1e1
   connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
   crass (1.0.8) sha256=7a0145c7a2c59f8e7923b3a69ce819c444823a00a5127d805298fea13be24efe
